@@ -14,7 +14,7 @@ form.addEventListener("submit", function(e) {
     }
     let cnonce = cnonceHexArray.join("");
     document.getElementsByName("cnonce")[0].value = cnonce;
-    let hashHex = sha512(pass+nonce+cnonce);
+    let hashHex = sha512(sha512(pass)+nonce+cnonce);
     document.getElementsByName("hashpass")[0].value = hashHex;
     return true;
 })
