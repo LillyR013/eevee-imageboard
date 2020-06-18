@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Login</title>
+        <script src="js/sha512.min.js"></script>
+    </head>
+    <body>
+        <p><a href="/">Cancel</a></p>
+        <h1 class="titleText">Login</h1>
+        <form method="POST" id="infoForm">{% csrf_token %}
+            <label for="username">Username:</label>
+            <input type="text" name="username" required><br><br>
+            <label for="password">Password:</label>
+            <input type="password" name="password" required><br><br>
+            <input type="checkbox" name="remember">
+            <input type="hidden" name="nonce" value="{{ nonce }}">
+            <input type="hidden" name="cnonce">
+            <input type="hidden" name="hashpass">
+            <label for="remember">Remember me?</label>
+            <p><a href="/signup">Sign Up</a></p>
+            <input type="submit" value="Submit">
+        </form>
+        <script src="js/loginForm.js"></script>
+    </body>
+</html>

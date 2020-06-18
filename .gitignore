@@ -1,0 +1,5 @@
+*.pyc
+*.save
+.vscode/*
+settings.py
+manage.py
