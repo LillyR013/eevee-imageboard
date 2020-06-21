@@ -9,6 +9,8 @@
         <p><a href="/">Cancel</a></p>
         <h1 class="titleText">Sign Up</h1>
         <form method="POST" id="infoForm">{% csrf_token %}
+            <label for="email">Email:</label>
+            <input type="text" name="email" required><br><br>
             <label for="username">Username:</label>
             <input type="text" name="username" required><br><br>
             <label for="password">Password:</label>
@@ -19,6 +21,7 @@
             <input type="hidden" name="nonce" value="{{ nonce }}">
             <p><a href="/login">Login</a></p>
             <input type="submit" value="Submit">
+            <p id="errortext">{{ errortext }}</p>
         </form>
         <script src="js/registerForm.js"></script>
     </body>
