@@ -21,4 +21,5 @@ urlpatterns = [
     path('', include('imageboard.urls')),
     path('login', include('imageboard.urls')),
     path('signup', include('imageboard.urls')),
+    path('logout', include('imageboard.urls'))
 ]

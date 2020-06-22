@@ -6,10 +6,20 @@ import hashlib
 def generate_server_nonce():
     return str(urandom(16))
 
+def logout(request):
+    if 'nonce' in request.session:
+        del request.session['nonce']
+    if not 'userID' in request.session:
+        return render(request, 'notLoggedIn.html')
+    else:
+        request.session.flush()
+        request.session.cycle_key()
+        return render(request, 'logout.html')
+
 def index(request):
     if 'nonce' in request.session:
         del request.session['nonce']
-    else:
+    if not 'userID' in request.session:
         request.session.set_expiry(0)
     return render(request, 'index.html')
 
