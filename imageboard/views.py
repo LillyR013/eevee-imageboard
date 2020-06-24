@@ -6,6 +6,16 @@ import hashlib
 def generate_server_nonce():
     return str(urandom(16))
 
+def tags(request):
+    if 'nonce' in request.session:
+        del request.session['nonce']
+    if not 'userID' in request.session:
+        return render(request, 'notLoggedIn.html')
+    elif request.session['permissions'] < 2:
+        return render(request, 'notAllowed.html')
+    else:
+        return render(request, 'tags.html')
+
 def logout(request):
     if 'nonce' in request.session:
         del request.session['nonce']
