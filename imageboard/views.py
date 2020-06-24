@@ -94,6 +94,14 @@ def takenEmail(request):
     request.session.set_expiry(0)
     return render(request, 'signup.html', {'nonce': nonce, 'errortext': "That email is registered with another account."})
 
+def upload(request):
+    if 'nonce' in request.session:
+        del request.session['nonce']
+    if not 'userID' in request.session:
+        return render(request, 'notLoggedIn.html')
+    else:
+        return render(request, "upload.html")
+
 def login(request):
     if request.method == "GET":
         if 'username' in request.session:
