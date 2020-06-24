@@ -7,14 +7,45 @@ def generate_server_nonce():
     return str(urandom(16))
 
 def tags(request):
-    if 'nonce' in request.session:
-        del request.session['nonce']
-    if not 'userID' in request.session:
-        return render(request, 'notLoggedIn.html')
-    elif request.session['permissions'] < 2:
-        return render(request, 'notAllowed.html')
+    if request.method == "GET":
+        if 'nonce' in request.session:
+            del request.session['nonce']
+        if not 'userID' in request.session:
+            return render(request, 'notLoggedIn.html')
+        elif request.session['permissions'] < 2:
+            return render(request, 'notAllowed.html')
+        else:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM tags")
+                rows = cursor.fetchall()
+                return render(request, 'tags.html', {"rows": rows})
     else:
-        return render(request, 'tags.html')
+        if 'tagID' in request.POST and not request.POST['tagID'] == "":
+            with connection.cursor() as cursor:
+                cursor.execute("DELETE FROM tags WHERE id=%s", [request.POST["tagID"]])
+                cursor.execute("DELETE FROM imageTags WHERE tagID=%s", [request.POST["tagID"]])
+                cursor.execute("SELECT * FROM tags")
+                rows = cursor.fetchall()
+                return render(request, 'tags.html', {"rows": rows})
+        elif 'tagName' in request.POST and not request.POST['tagName'] == "":
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM tags WHERE name = %s", [request.POST['tagName']])
+                rows = cursor.fetchone()
+                if rows is not None:
+                    cursor.execute("SELECT * FROM tags")
+                    rows = cursor.fetchall()
+                    return render(request, 'tags.html', {"rows": rows, "errorMessage": "Tag already in use"})
+                else:
+                    cursor.execute("INSERT INTO tags(name) VALUES(%s)", [request.POST["tagName"]])
+                    cursor.execute("SELECT * FROM tags")
+                    rows = cursor.fetchall()
+                    return render(request, 'tags.html', {"rows": rows})
+        else:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM tags")
+                rows = cursor.fetchall()
+                return render(request, 'tags.html', {"rows": rows, "errorMessage": "Something went wrong, please try again."})
+        
 
 def logout(request):
     if 'nonce' in request.session:

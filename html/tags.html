@@ -6,5 +6,17 @@
     </head>
     <body>
         <p><a href="/">Back</a></p>
+        <h1>Tags</h1>
+        <form method="POST">{% csrf_token %}
+            {% for row in rows %}
+            <label for="button{{ row.0 }}">{{ row.1 }}</label>
+            <button name="button{{ row.0 }}" formnovalidate>Remove</button></br></br>
+            {% endfor %}
+            <input type="text" name="tagName" required>
+            <input type="submit" value="Add Tag">
+            <input type="hidden" name="tagID">
+            <p>{{ errorMessage }}</p>
+        </form>
+        <script src="js/handleTagRemoval.js"></script>
     </body>
 </html>
