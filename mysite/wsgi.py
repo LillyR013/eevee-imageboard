@@ -8,6 +8,8 @@ https://docs.djangoproject.com/en/3.0/howto/deployment/wsgi/
 """
 
 import os
+from dotenv import load_dotenv
+load_dotenv('var/www/env/mysite/.env')
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
 

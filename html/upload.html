@@ -7,5 +7,17 @@
     <body>
         <p><a href="/">Back</a></p>
         <h1>Upload</h1>
+        <form method="POST">{% csrf_token %}
+            <label for="image">Image:</label>
+            <input type="file" name="image" required accept="image/jpeg, image/png, image/gif">
+            </br></br>
+            <input type="submit" value="Upload">
+            </br>
+            <h2>Tags</h2>
+            {% for row in rows %}
+                <label for="checkbox{{ row.0 }}">{{ row.1 }}</label>
+                <input type="checkbox" name="checkbox{{ row.0 }}"></br>
+            {% endfor %}
+        </form>
     </body>
 </html>

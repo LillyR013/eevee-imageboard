@@ -1,5 +1,6 @@
 *.pyc
 *.save
 .vscode/*
-settings.py
 manage.py
+.env
+*.swp

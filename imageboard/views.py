@@ -95,12 +95,16 @@ def takenEmail(request):
     return render(request, 'signup.html', {'nonce': nonce, 'errortext': "That email is registered with another account."})
 
 def upload(request):
-    if 'nonce' in request.session:
-        del request.session['nonce']
-    if not 'userID' in request.session:
-        return render(request, 'notLoggedIn.html')
-    else:
-        return render(request, "upload.html")
+    if request.method == "GET":
+        if 'nonce' in request.session:
+            del request.session['nonce']
+        if not 'userID' in request.session:
+            return render(request, 'notLoggedIn.html')
+        else:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM tags")
+                rows = cursor.fetchall()
+                return render(request, "upload.html", {"rows": rows})
 
 def login(request):
     if request.method == "GET":
