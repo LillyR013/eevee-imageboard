@@ -4,3 +4,4 @@
 manage.py
 .env
 *.swp
+images/*

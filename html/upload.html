@@ -7,7 +7,7 @@
     <body>
         <p><a href="/">Back</a></p>
         <h1>Upload</h1>
-        <form method="POST">{% csrf_token %}
+        <form method="POST" enctype="multipart/form-data">{% csrf_token %}
             <label for="image">Image:</label>
             <input type="file" name="image" required accept="image/jpeg, image/png, image/gif">
             </br></br>
@@ -19,5 +19,6 @@
                 <input type="checkbox" name="checkbox{{ row.0 }}"></br>
             {% endfor %}
         </form>
+        <p>{{ errortext }}</p>
     </body>
 </html>

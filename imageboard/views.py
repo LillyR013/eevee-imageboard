@@ -1,7 +1,15 @@
-from django.shortcuts import render
-from os import urandom
-from django.db import connection
+import copy
 import hashlib
+import os
+import random
+from datetime import datetime
+from os import urandom
+import magic
+from django.db import connection
+from django.shortcuts import render
+from PIL import Image, warnings
+
+random.seed(datetime.now())
 
 def generate_server_nonce():
     return str(urandom(16))
@@ -94,6 +102,53 @@ def takenEmail(request):
     request.session.set_expiry(0)
     return render(request, 'signup.html', {'nonce': nonce, 'errortext': "That email is registered with another account."})
 
+def validateImage(f):
+    try:
+        fileToValidate = copy.deepcopy(f)
+        warnings.simplefilter('error', Image.DecompressionBombWarning)
+        image = Image.open(fileToValidate)
+        image.verify()    
+        return True
+    except:
+        return False
+
+def stripImage(f, fileType):
+    image = Image.open(f)
+    oldData = image.load()
+    newImage = Image.new(image.mode, image.size)
+    data = newImage.load()
+    for y in range(image.size[1]):
+        for x in range(image.size[0]):
+            data[(x, y)] = oldData[(x, y)]
+    return newImage
+
+def addToDatabase(fileType, uploaderID, POST):
+    return 1
+
+def parseImage(f, POST, userID):
+    if validateImage(f):
+        begin = f.tell()
+        fileType = magic.from_buffer(f.read(1024), mime=True)
+        f.seek(begin)
+        image = stripImage(f, fileType)
+        if fileType == "image/jpeg":
+            fileNum = addToDatabase("jpeg", userID, POST)
+            image.save('var/www/env/mysite/images/' + str(fileNum) + '.jpeg')
+            return True
+        elif fileType == "image/png":
+            fileNum = addToDatabase("png", userID, POST)
+            image.save('var/www/env/mysite/images/' + str(fileNum) + '.png')
+            return True
+        elif fileType == "image/gif":
+            fileNum = addToDatabase("gif", userID, POST)
+            image.save('var/www/env/mysite/images/' + str(fileNum) + '.gif')
+            return True
+        else:
+            return False
+    else:
+        return False
+
+
 def upload(request):
     if request.method == "GET":
         if 'nonce' in request.session:
@@ -105,6 +160,23 @@ def upload(request):
                 cursor.execute("SELECT * FROM tags")
                 rows = cursor.fetchall()
                 return render(request, "upload.html", {"rows": rows})
+    else:
+        if "image" in request.FILES and "userID" in request.session:
+            if parseImage(request.FILES["image"], request.POST, request.session["userID"]):
+                with connection.cursor() as cursor:
+                    cursor.execute("SELECT * FROM tags")
+                    rows = cursor.fetchall()
+                    return render(request, "upload.html", {"rows": rows, "errortext": "Upload successful."})
+            else:
+                with connection.cursor() as cursor:
+                    cursor.execute("SELECT * FROM tags")
+                    rows = cursor.fetchall()
+                    return render(request, "upload.html", {"rows": rows, "errortext": "Upload rejected."})
+        else:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM tags")
+                rows = cursor.fetchall()
+                return render(request, "upload.html", {"rows": rows, "errortext": "Upload failed."})
 
 def login(request):
     if request.method == "GET":
