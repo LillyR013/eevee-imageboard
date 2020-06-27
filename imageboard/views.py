@@ -114,6 +114,7 @@ def validateImage(f):
 
 def stripImage(f, fileType):
     image = Image.open(f)
+    image = image.convert("RGB")
     oldData = image.load()
     newImage = Image.new(image.mode, image.size)
     data = newImage.load()
