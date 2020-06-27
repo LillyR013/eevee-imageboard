@@ -123,7 +123,15 @@ def stripImage(f, fileType):
     return newImage
 
 def addToDatabase(fileType, uploaderID, POST):
-    return 1
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT uuid();")
+        uuid = cursor.fetchone()
+        uuid = uuid[0]
+        cursor.execute("INSERT INTO images(file_name, fileType, uploaded_by) VALUES(%s, %s, %s);", [uuid, fileType, uploaderID])
+        for key in POST:
+            if(POST[key] == "on"):
+                cursor.execute("INSERT INTO imageTags(imageID, tagID) VALUES (LAST_INSERT_ID(), %s)", [key[8:]])
+        return uuid
 
 def parseImage(f, POST, userID):
     if validateImage(f):
