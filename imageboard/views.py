@@ -5,6 +5,7 @@ import random
 from datetime import datetime
 from os import urandom
 import magic
+from django.http import Http404
 from django.db import connection
 from django.shortcuts import render
 from PIL import Image, warnings
@@ -111,6 +112,16 @@ def validateImage(f):
         return True
     except:
         return False
+
+def displayImage(request):
+    imageID = request.path[6:]
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT file_name, fileType FROM images WHERE id=%s", [imageID])
+        image = cursor.fetchone()
+        if image != None:
+            return render(request, "viewImage.html", {"imageID": imageID, "imagePath": image[0] + "." + image[1]})
+        else:
+            raise Http404()
 
 def stripImage(f, fileType):
     if(fileType != "image/gif"):
