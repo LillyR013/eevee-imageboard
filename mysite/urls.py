@@ -24,6 +24,6 @@ urlpatterns = [
     path('logout', include('imageboard.urls')),
     path('tags', include('imageboard.urls')),
     path('upload', include('imageboard.urls')),
-    re_path(r'view/[1|2|3|4|5|6|7|8|9]{1}\d*', include('imageboard.urls'))
-    #path('view/1', include('imageboard.urls'))
+    re_path(r'view/[1|2|3|4|5|6|7|8|9]{1}\d*', include('imageboard.urls')),
+    path('search', include('imageboard.urls'))
 ]

@@ -137,6 +137,20 @@ def stripImage(f, fileType):
     else:
         return f
 
+def chunks(list, n):
+    for i in range(0, len(list), n):
+        yield list[i:i + n]
+
+def search(request):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT file_name, fileType, id FROM images ORDER BY uploaded_at DESC;")
+        images = cursor.fetchall()
+        if images != None:
+            images = list(chunks(images, 4))
+            return render(request, "search.html", {"images": images})
+        else:
+            return render(request, "search.html")
+
 def addToDatabase(fileType, uploaderID, POST):
     with connection.cursor() as cursor:
         cursor.execute("SELECT uuid();")
