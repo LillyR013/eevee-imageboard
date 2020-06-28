@@ -113,15 +113,18 @@ def validateImage(f):
         return False
 
 def stripImage(f, fileType):
-    image = Image.open(f)
-    image = image.convert("RGB")
-    oldData = image.load()
-    newImage = Image.new(image.mode, image.size)
-    data = newImage.load()
-    for y in range(image.size[1]):
-        for x in range(image.size[0]):
-            data[(x, y)] = oldData[(x, y)]
-    return newImage
+    if(fileType != "image/gif"):
+        image = Image.open(f)
+        image = image.convert("RGB")
+        oldData = image.load()
+        newImage = Image.new(image.mode, image.size)
+        data = newImage.load()
+        for y in range(image.size[1]):
+            for x in range(image.size[0]):
+                data[(x, y)] = oldData[(x, y)]
+        return newImage
+    else:
+        return f
 
 def addToDatabase(fileType, uploaderID, POST):
     with connection.cursor() as cursor:
@@ -150,7 +153,9 @@ def parseImage(f, POST, userID):
             return True
         elif fileType == "image/gif":
             fileNum = addToDatabase("gif", userID, POST)
-            image.save('var/www/env/mysite/images/' + str(fileNum) + '.gif')
+            with open('var/www/env/mysite/images/'+str(fileNum)+'.gif', 'wb+') as destination:
+                for chunk in f.chunks():
+                    destination.write(chunk)
             return True
         else:
             return False
